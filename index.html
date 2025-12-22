@@ -6,35 +6,40 @@
   <title>予約フォーム</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background-color: #f5f5f5;
+    }
+    .loading {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
-      background-color: #f5f5f5;
+      flex-direction: column;
     }
-    .loading {
-      text-align: center;
-      padding: 20px;
-    }
-    .loading p {
-      color: #666;
-      font-size: 16px;
-    }
+    .loading p { color: #666; font-size: 16px; }
     .spinner {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border: 4px solid #e0e0e0;
       border-top: 4px solid #06C755;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
+      margin-bottom: 16px;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    .form-container {
+      display: none;
+      width: 100%;
+      height: 100vh;
+    }
+    .form-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
     .error {
       color: #d32f2f;
@@ -47,6 +52,9 @@
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <p>LINEでログインしています...</p>
+  </div>
+  <div class="form-container" id="formContainer">
+    <iframe id="formFrame"></iframe>
   </div>
   <div class="error" id="error" style="display:none;">
     <p>エラーが発生しました。<br>LINEアプリから開いてください。</p>
@@ -72,10 +80,13 @@
         const userId = profile.userId;
         
         const formUrl = FORM_BASE_URL 
-          + "?" + ENTRY_DISPLAY_NAME + "=" + encodeURIComponent(displayName)
+          + "?embedded=true"
+          + "&" + ENTRY_DISPLAY_NAME + "=" + encodeURIComponent(displayName)
           + "&" + ENTRY_USER_ID + "=" + encodeURIComponent(userId);
         
-        window.location.href = formUrl;
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("formContainer").style.display = "block";
+        document.getElementById("formFrame").src = formUrl;
         
       } catch (error) {
         console.error("Error:", error);
