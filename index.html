@@ -1,55 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>予約フォーム</title>
+  <title>うまれたてNewBornPhoto 予約</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      background-color: #f5f5f5;
-    }
-    .loading { text-align: center; padding: 20px; }
-    .loading p { color: #666; font-size: 16px; }
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #e0e0e0;
-      border-top: 4px solid #06C755;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .error { color: #d32f2f; text-align: center; padding: 20px; display: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', sans-serif; background: #f5f5f5; color: #333; }
+    .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+    .header { background: #8C372D; color: white; padding: 20px; text-align: center; margin: -20px -20px 20px; }
+    .header h1 { font-size: 18px; font-weight: normal; }
+    .form-group { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 8px; }
+    .required::after { content: " *"; color: #d32f2f; }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    .form-group input:focus { outline: none; border-color: #8C372D; }
+    .radio-group, .checkbox-group { margin-top: 8px; }
+    .radio-item, .checkbox-item { display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .radio-item:last-child, .checkbox-item:last-child { border-bottom: none; }
+    .radio-item input, .checkbox-item input { margin-right: 10px; margin-top: 3px; transform: scale(1.2); }
+    .radio-item label, .checkbox-item label { font-size: 14px; font-weight: normal; line-height: 1.4; }
+    .description { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.5; }
+    .submit-btn { width: 100%; padding: 16px; background: #8C372D; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    .submit-btn:disabled { background: #ccc; }
+    .loading { display: none; text-align: center; padding: 40px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top: 4px solid #8C372D; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .success { display: none; text-align: center; padding: 40px; }
+    .success h2 { color: #4caf50; margin-bottom: 16px; }
+    .error-msg { color: #d32f2f; font-size: 12px; margin-top: 4px; display: none; }
   </style>
 </head>
 <body>
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>LINEでログインしています...</p>
-  </div>
-  <div class="error" id="error">
-    <p>エラーが発生しました。<br>LINEアプリから開いてください。</p>
+  <div class="container">
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>読み込み中...</p>
+    </div>
+
+    <div id="formContainer" style="display:none;">
+      <div class="header">
+        <h1>うまれたてNewBornPhoto<br>予約フォーム</h1>
+      </div>
+      <p style="font-size:13px; margin-bottom:20px; line-height:1.6;">
+        新横浜母と子の病院 × スタジオクローシェの特別撮影会になります。<br>
+        詳細は院内のポスターなどをご確認ください。
+      </p>
+
+      <form id="reservationForm">
+        <div class="form-group">
+          <label class="required">お名前（ママのお名前）</label>
+          <input type="text" id="name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required">メールアドレス</label>
+          <input type="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required">電話番号</label>
+          <input type="tel" id="phone" required placeholder="09012345678">
+          <p class="description">緊急連絡用（ハイフンなしで入力してください）</p>
+        </div>
+
+        <div class="form-group">
+          <label>ご出産予定日</label>
+          <input type="date" id="dueDate">
+        </div>
+
+        <div class="form-group">
+          <label class="required">ご希望プラン</label>
+          <p class="description">撮影は毎週月曜日（午前）・木曜日（午後）に行う予定です。<br>天候や祝日によっては開催されない可能性もございます事ご了承くださいませ。</p>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" name="plan" id="plan1" value="PLAN -無料" required>
+              <label for="plan1">PLAN - 無料</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="plan" id="plan2" value="PLAN - A + ¥5,500(税込)">
+              <label for="plan2">PLAN - A + ¥5,500(税込)</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="plan" id="plan3" value="PLAN - B + ¥11,000(税込)">
+              <label for="plan3">PLAN - B + ¥11,000(税込)</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="plan" id="plan4" value="PLAN - C + ¥25,300(税込) 1日限定2組">
+              <label for="plan4">PLAN - C + ¥25,300(税込) 1日限定2組</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="required">同意事項</label>
+          <p class="description">同意いただける場合は下記にチェックをお願いいたします。</p>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="consent1" required>
+              <label for="consent1">お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合もございます。</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="consent2" required>
+              <label for="consent2">サービスご提供中において、お荷物・貴重品の紛失・盗難は一切責任が持てません。ご了承くださいませ。</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="required">お写真の使用について</label>
+          <p class="description">※使用の際は、個人情報は伏せさせていただきます。<br>当院内で撮影した写真・動画を（SNS）へ掲載することに</p>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" name="photoUsage" id="photo1" value="承諾します（お子様とママ）" required>
+              <label for="photo1">承諾します（お子様とママ）</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="photoUsage" id="photo2" value="承諾します（お子様のみ）">
+              <label for="photo2">承諾します（お子様のみ）</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="photoUsage" id="photo3" value="承諾します（お子様の横顔のみ）">
+              <label for="photo3">承諾します（お子様の横顔のみ）</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="photoUsage" id="photo4" value="承諾しません">
+              <label for="photo4">承諾しません</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">予約を送信する</button>
+      </form>
+    </div>
+
+    <div class="success" id="success">
+      <h2>✓ 予約完了</h2>
+      <p>ご予約ありがとうございます！<br>確認メールをお送りしましたので、<br>ご確認ください。</p>
+    </div>
   </div>
 
   <script>
     const LIFF_ID = "2008750303-KIIQZYQt";
-    const FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfXxaql90AsS2SopCCOlDG4hgYUT8Vg7H6UpOLOjL-bYIObHQ/viewform";
-    const ENTRY_DISPLAY_NAME = "entry.222709462";
-    const ENTRY_USER_ID = "entry.1391347727";
+    const GAS_URL = ""https://script.google.com/macros/s/AKfycbz9BMAKo5RAXQ1sWp9fx3eKVh_SpdbzwHkQDOMMcBbu5YMXzWh_JO_Fa80-rBmJqKMvBQ/exec";
 
-    async function main() {
+    let lineDisplayName = "";
+    let lineUserId = "";
+
+    async function initLiff() {
       try {
+        document.getElementById("loading").style.display = "block";
+        
         await liff.init({ liffId: LIFF_ID });
         
         if (!liff.isLoggedIn()) {
@@ -58,23 +163,64 @@
         }
         
         const profile = await liff.getProfile();
-        const displayName = profile.displayName;
-        const userId = profile.userId;
+        lineDisplayName = profile.displayName;
+        lineUserId = profile.userId;
         
-        const formUrl = FORM_BASE_URL 
-          + "?" + ENTRY_DISPLAY_NAME + "=" + encodeURIComponent(displayName)
-          + "&" + ENTRY_USER_ID + "=" + encodeURIComponent(userId);
-        
-        window.location.replace(formUrl);
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("formContainer").style.display = "block";
         
       } catch (error) {
-        console.error("Error:", error);
+        console.error("LIFF init error:", error);
         document.getElementById("loading").style.display = "none";
-        document.getElementById("error").style.display = "block";
+        document.getElementById("formContainer").style.display = "block";
       }
     }
 
-    main();
+    document.getElementById("reservationForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "送信中...";
+
+      const consentItems = [];
+      if (document.getElementById("consent1").checked) {
+        consentItems.push("お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合もございます。");
+      }
+      if (document.getElementById("consent2").checked) {
+        consentItems.push("サービスご提供中において、お荷物・貴重品の紛失・盗難は一切責任が持てません。ご了承くださいませ。");
+      }
+
+      const formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        dueDate: document.getElementById("dueDate").value,
+        plan: document.querySelector('input[name="plan"]:checked').value,
+        consent: consentItems.join(", "),
+        photoUsage: document.querySelector('input[name="photoUsage"]:checked').value,
+        lineDisplayName: lineDisplayName,
+        lineUserId: lineUserId
+      };
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify(formData)
+        });
+
+        document.getElementById("formContainer").style.display = "none";
+        document.getElementById("success").style.display = "block";
+
+      } catch (error) {
+        console.error("Submit error:", error);
+        alert("送信に失敗しました。もう一度お試しください。");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "予約を送信する";
+      }
+    });
+
+    initLiff();
   </script>
 </body>
 </html>
