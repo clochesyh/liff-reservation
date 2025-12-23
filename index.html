@@ -6,46 +6,31 @@
   <title>予約フォーム</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-      background-color: #f5f5f5;
-    }
-    .loading {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      flex-direction: column;
+      margin: 0;
+      background-color: #f5f5f5;
     }
+    .loading { text-align: center; padding: 20px; }
     .loading p { color: #666; font-size: 16px; }
     .spinner {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       border: 4px solid #e0e0e0;
       border-top: 4px solid #06C755;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 16px;
+      margin: 0 auto 16px;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .form-container {
-      display: none;
-      width: 100%;
-      height: 100vh;
-    }
-    .form-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .error {
-      color: #d32f2f;
-      text-align: center;
-      padding: 20px;
-    }
+    .error { color: #d32f2f; text-align: center; padding: 20px; display: none; }
   </style>
 </head>
 <body>
@@ -53,18 +38,15 @@
     <div class="spinner"></div>
     <p>LINEでログインしています...</p>
   </div>
-  <div class="form-container" id="formContainer">
-    <iframe id="formFrame"></iframe>
-  </div>
-  <div class="error" id="error" style="display:none;">
+  <div class="error" id="error">
     <p>エラーが発生しました。<br>LINEアプリから開いてください。</p>
   </div>
 
   <script>
     const LIFF_ID = "2008750303-KIIQZYQt";
     const FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfXxaql90AsS2SopCCOlDG4hgYUT8Vg7H6UpOLOjL-bYIObHQ/viewform";
-    const ENTRY_DISPLAY_NAME = "entry.716450714";
-    const ENTRY_USER_ID = "entry.1735167181";
+    const ENTRY_DISPLAY_NAME = "entry.222709462";
+    const ENTRY_USER_ID = "entry.1391347727";
 
     async function main() {
       try {
@@ -80,13 +62,10 @@
         const userId = profile.userId;
         
         const formUrl = FORM_BASE_URL 
-          + "?embedded=true"
-          + "&" + ENTRY_DISPLAY_NAME + "=" + encodeURIComponent(displayName)
+          + "?" + ENTRY_DISPLAY_NAME + "=" + encodeURIComponent(displayName)
           + "&" + ENTRY_USER_ID + "=" + encodeURIComponent(userId);
         
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("formContainer").style.display = "block";
-        document.getElementById("formFrame").src = formUrl;
+        window.location.replace(formUrl);
         
       } catch (error) {
         console.error("Error:", error);
