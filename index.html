@@ -5,34 +5,365 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>うまれたてNewBornPhoto 予約</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', sans-serif; background: #f5f5f5; color: #333; }
-    .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-    .header { background: #8C372D; color: white; padding: 20px; text-align: center; margin: -20px -20px 20px; }
-    .header h1 { font-size: 18px; font-weight: normal; }
-    .form-group { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 8px; }
-    .required::after { content: " *"; color: #d32f2f; }
+    
+    body { 
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      background: linear-gradient(135deg, #fdf6f3 0%, #f9f1ed 100%);
+      color: #4a4a4a;
+      min-height: 100vh;
+      line-height: 1.8;
+    }
+    
+    .container { 
+      max-width: 520px; 
+      margin: 0 auto; 
+      padding: 0;
+    }
+    
+    .header { 
+      width: 100%;
+      height: auto;
+    }
+    
+    .header img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .main-content {
+      padding: 24px 20px 40px;
+    }
+    
+    .intro-text {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.9;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    
+    .form-group { 
+      background: white; 
+      border-radius: 16px; 
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    
+    .form-group > label:first-child { 
+      display: block; 
+      font-size: 14px; 
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    
+    .required::after { 
+      content: " *"; 
+      color: #c75050;
+      font-size: 12px;
+    }
+    
     .form-group input[type="text"],
     .form-group input[type="email"],
     .form-group input[type="tel"],
-    .form-group input[type="date"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-    .form-group input:focus { outline: none; border-color: #8C372D; }
-    .radio-group, .checkbox-group { margin-top: 8px; }
-    .radio-item, .checkbox-item { display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
-    .radio-item:last-child, .checkbox-item:last-child { border-bottom: none; }
-    .radio-item input, .checkbox-item input { margin-right: 10px; margin-top: 3px; transform: scale(1.2); }
-    .radio-item label, .checkbox-item label { font-size: 14px; font-weight: normal; line-height: 1.4; }
-    .description { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.5; }
-    .submit-btn { width: 100%; padding: 16px; background: #8C372D; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-    .submit-btn:disabled { background: #ccc; }
-    .loading { display: none; text-align: center; padding: 40px; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top: 4px solid #8C372D; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .success { display: none; text-align: center; padding: 40px; }
-    .success h2 { color: #4caf50; margin-bottom: 16px; }
-    .error-msg { color: #d32f2f; font-size: 12px; margin-top: 4px; display: none; }
+    .form-group input[type="date"] { 
+      width: 100%; 
+      padding: 14px 16px; 
+      border: 1.5px solid #e8e0dc; 
+      border-radius: 10px; 
+      font-size: 16px;
+      font-family: 'Noto Sans JP', sans-serif;
+      transition: all 0.3s ease;
+      background: #fdfcfb;
+    }
+    
+    .form-group input:focus { 
+      outline: none; 
+      border-color: #8C372D;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(140, 55, 45, 0.1);
+    }
+    
+    .form-group input[type="date"] {
+      max-width: 200px;
+    }
+    
+    .description { 
+      font-size: 12px; 
+      color: #888; 
+      margin-top: 8px;
+      line-height: 1.7;
+    }
+    
+    .plan-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .plan-card {
+      border: 2px solid #e8e0dc;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: block;
+      background: white;
+    }
+    
+    .plan-card:hover {
+      border-color: #d4a59a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(140, 55, 45, 0.12);
+    }
+    
+    .plan-card.selected {
+      border-color: #8C372D;
+      box-shadow: 0 8px 25px rgba(140, 55, 45, 0.2);
+    }
+    
+    .plan-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+    
+    .plan-card-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    .plan-card-body {
+      padding: 20px;
+    }
+    
+    .plan-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    
+    .plan-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .plan-price-area {
+      text-align: right;
+    }
+    
+    .plan-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #8C372D;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    
+    .plan-price-note {
+      font-size: 10px;
+      color: #888;
+    }
+    
+    .plan-cuts {
+      display: inline-block;
+      background: linear-gradient(135deg, #8C372D 0%, #a94438 100%);
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin: 8px 0 12px;
+    }
+    
+    .plan-features {
+      margin: 12px 0;
+    }
+    
+    .plan-feature {
+      font-size: 12px;
+      color: #555;
+      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .plan-feature::before {
+      content: "✓";
+      color: #8C372D;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    
+    .plan-highlight {
+      background: #fff8f6;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .plan-highlight-icon {
+      font-size: 16px;
+    }
+    
+    .plan-highlight-text {
+      font-size: 11px;
+      color: #8C372D;
+      font-weight: 500;
+    }
+    
+    .plan-description {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.7;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #e8e0dc;
+      font-style: italic;
+    }
+    
+    .checkbox-group, .radio-group { 
+      margin-top: 12px; 
+    }
+    
+    .checkbox-item, .radio-item { 
+      display: flex; 
+      align-items: flex-start; 
+      padding: 12px 0; 
+      border-bottom: 1px solid #f0ebe8;
+    }
+    
+    .checkbox-item:last-child, .radio-item:last-child { 
+      border-bottom: none; 
+    }
+    
+    .checkbox-item input, .radio-item input { 
+      margin-right: 12px; 
+      margin-top: 4px;
+      transform: scale(1.2);
+      accent-color: #8C372D;
+    }
+    
+    .checkbox-item label, .radio-item label { 
+      font-size: 13px; 
+      font-weight: 400;
+      line-height: 1.6;
+      color: #555;
+    }
+    
+    .submit-btn { 
+      width: 100%; 
+      padding: 18px; 
+      background: linear-gradient(135deg, #8C372D 0%, #a94438 100%);
+      color: white; 
+      border: none; 
+      border-radius: 12px; 
+      font-size: 16px; 
+      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer; 
+      margin-top: 24px;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(140, 55, 45, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(140, 55, 45, 0.4);
+    }
+    
+    .submit-btn:disabled { 
+      background: #ccc;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .loading { 
+      display: none;
+      text-align: center; 
+      padding: 60px 24px;
+    }
+    
+    .spinner { 
+      width: 50px; 
+      height: 50px; 
+      border: 3px solid #f0ebe8; 
+      border-top: 3px solid #8C372D; 
+      border-radius: 50%; 
+      animation: spin 1s linear infinite; 
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+    
+    .loading p {
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .success { 
+      display: none; 
+      text-align: center; 
+      padding: 60px 24px;
+      background: white;
+      border-radius: 20px;
+      margin: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+    
+    .success h2 { 
+      color: #2e7d32;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    
+    .success p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+    
+    .error { 
+      display: none;
+      text-align: center; 
+      padding: 40px 24px;
+      color: #d32f2f;
+    }
   </style>
 </head>
 <body>
@@ -44,103 +375,178 @@
 
     <div id="formContainer" style="display:none;">
       <div class="header">
-        <h1>うまれたてNewBornPhoto<br>予約フォーム</h1>
+        <img src="https://cloche-photo.com/images/shinyokohama/form-header.jpg" alt="NewBorn Photo">
       </div>
-      <p style="font-size:13px; margin-bottom:20px; line-height:1.6;">
-        新横浜母と子の病院 × スタジオクローシェの特別撮影会になります。<br>
-        詳細は院内のポスターなどをご確認ください。
-      </p>
-
-      <form id="reservationForm">
-        <div class="form-group">
-          <label class="required">お名前（ママのお名前）</label>
-          <input type="text" id="name" required>
+      
+      <div class="main-content">
+        <div class="intro-text">
+          特別な瞬間を、一生の宝物に。<br>
+          生まれたての赤ちゃんの姿を、プロのカメラマンが優しく撮影いたします。<br><br>
+          <span style="color:#8C372D;">※年末年始（12/29〜1/4）は休業</span>
         </div>
 
-        <div class="form-group">
-          <label class="required">メールアドレス</label>
-          <input type="email" id="email" required>
-        </div>
+        <form id="reservationForm">
+          <div class="form-group">
+            <label class="required">お名前（ママのお名前）</label>
+            <input type="text" id="name" required placeholder="山田 花子">
+          </div>
 
-        <div class="form-group">
-          <label class="required">電話番号</label>
-          <input type="tel" id="phone" required placeholder="09012345678">
-          <p class="description">緊急連絡用（ハイフンなしで入力してください）</p>
-        </div>
+          <div class="form-group">
+            <label class="required">メールアドレス</label>
+            <input type="email" id="email" required placeholder="example@email.com">
+          </div>
 
-        <div class="form-group">
-          <label>ご出産予定日</label>
-          <input type="date" id="dueDate">
-        </div>
+          <div class="form-group">
+            <label class="required">電話番号</label>
+            <input type="tel" id="phone" required placeholder="09012345678">
+            <p class="description">緊急連絡用（ハイフンなしで入力）</p>
+          </div>
 
-        <div class="form-group">
-          <label class="required">ご希望プラン</label>
-          <p class="description">撮影は毎週月曜日（午前）・木曜日（午後）に行う予定です。<br>天候や祝日によっては開催されない可能性もございます事ご了承くださいませ。</p>
-          <div class="radio-group">
-            <div class="radio-item">
-              <input type="radio" name="plan" id="plan1" value="PLAN -無料" required>
-              <label for="plan1">PLAN - 無料</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="plan" id="plan2" value="PLAN - A + ¥5,500(税込)">
-              <label for="plan2">PLAN - A + ¥5,500(税込)</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="plan" id="plan3" value="PLAN - B + ¥11,000(税込)">
-              <label for="plan3">PLAN - B + ¥11,000(税込)</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="plan" id="plan4" value="PLAN - C + ¥25,300(税込) 1日限定2組">
-              <label for="plan4">PLAN - C + ¥25,300(税込) 1日限定2組</label>
+          <div class="form-group">
+            <label>ご出産予定日</label>
+            <input type="date" id="dueDate">
+          </div>
+
+          <div class="form-group">
+            <label class="required">ご希望プラン</label>
+            <p class="description">撮影は毎週月曜日（午前）・木曜日（午後）に実施予定です。</p>
+            
+            <div class="plan-cards">
+              <label class="plan-card" onclick="selectPlan(this)">
+                <input type="radio" name="plan" value="お試しプラン ¥550" required>
+                <img src="https://cloche-photo.com/images/shinyokohama/form-plan-1.jpg" alt="お試しプラン" class="plan-card-image">
+                <div class="plan-card-body">
+                  <div class="plan-card-header">
+                    <span class="plan-name">お試しプラン</span>
+                    <div class="plan-price-area">
+                      <div class="plan-price">¥550</div>
+                      <div class="plan-price-note">税込</div>
+                    </div>
+                  </div>
+                  <div class="plan-cuts">1 Cut</div>
+                  <div class="plan-features">
+                    <div class="plan-feature">撮ってすぐにお渡し</div>
+                    <div class="plan-feature">写真補正なし</div>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="plan-card" onclick="selectPlan(this)">
+                <input type="radio" name="plan" value="PLAN-A ¥5,500(税込)">
+                <img src="https://cloche-photo.com/images/shinyokohama/form-plan-2.jpg" alt="PLAN A" class="plan-card-image">
+                <div class="plan-card-body">
+                  <div class="plan-card-header">
+                    <span class="plan-name">PLAN - A</span>
+                    <div class="plan-price-area">
+                      <div class="plan-price">¥5,500</div>
+                      <div class="plan-price-note">税込</div>
+                    </div>
+                  </div>
+                  <div class="plan-cuts">3 Cuts</div>
+                  <div class="plan-features">
+                    <div class="plan-feature">写真補正あり</div>
+                    <div class="plan-feature">ママとあかちゃん一緒に撮影OK</div>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="plan-card" onclick="selectPlan(this)">
+                <input type="radio" name="plan" value="PLAN-B ¥11,000(税込)">
+                <img src="https://cloche-photo.com/images/shinyokohama/form-plan-3.jpg" alt="PLAN B" class="plan-card-image">
+                <div class="plan-card-body">
+                  <div class="plan-card-header">
+                    <span class="plan-name">PLAN - B</span>
+                    <div class="plan-price-area">
+                      <div class="plan-price">¥11,000</div>
+                      <div class="plan-price-note">税込</div>
+                    </div>
+                  </div>
+                  <div class="plan-cuts">6 Cuts</div>
+                  <div class="plan-features">
+                    <div class="plan-feature">写真補正あり</div>
+                    <div class="plan-feature">ママとあかちゃん一緒に撮影OK</div>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="plan-card" onclick="selectPlan(this)">
+                <input type="radio" name="plan" value="PLAN-C ¥25,300(税込)">
+                <img src="https://cloche-photo.com/images/shinyokohama/form-plan-4.jpg" alt="PLAN C" class="plan-card-image">
+                <div class="plan-card-body">
+                  <div class="plan-card-header">
+                    <span class="plan-name">PLAN - C</span>
+                    <div class="plan-price-area">
+                      <div class="plan-price">¥25,300</div>
+                      <div class="plan-price-note">税込</div>
+                    </div>
+                  </div>
+                  <div class="plan-cuts">10 Cuts</div>
+                  <div class="plan-highlight">
+                    <span class="plan-highlight-icon">🎀</span>
+                    <span class="plan-highlight-text">コーディネートはおまかせ！あかちゃんのコーディネートあり</span>
+                  </div>
+                  <div class="plan-features">
+                    <div class="plan-feature">写真補正あり</div>
+                    <div class="plan-feature">ママとあかちゃん一緒に撮影OK</div>
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="required">同意事項</label>
-          <p class="description">同意いただける場合は下記にチェックをお願いいたします。</p>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="consent1" required>
-              <label for="consent1">お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合もございます。</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="consent2" required>
-              <label for="consent2">サービスご提供中において、お荷物・貴重品の紛失・盗難は一切責任が持てません。ご了承くださいませ。</label>
+          <div class="form-group">
+            <label class="required">同意事項</label>
+            <p class="description">以下にチェックをお願いいたします。</p>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="consent1" required>
+                <label for="consent1">お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合がございます。</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="consent2" required>
+                <label for="consent2">サービスご提供中の貴重品の紛失・盗難について責任を負いかねます。</label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="required">お写真の使用について</label>
-          <p class="description">※使用の際は、個人情報は伏せさせていただきます。<br>当院内で撮影した写真・動画を（SNS）へ掲載することに</p>
-          <div class="radio-group">
-            <div class="radio-item">
-              <input type="radio" name="photoUsage" id="photo1" value="承諾します（お子様とママ）" required>
-              <label for="photo1">承諾します（お子様とママ）</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="photoUsage" id="photo2" value="承諾します（お子様のみ）">
-              <label for="photo2">承諾します（お子様のみ）</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="photoUsage" id="photo3" value="承諾します（お子様の横顔のみ）">
-              <label for="photo3">承諾します（お子様の横顔のみ）</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" name="photoUsage" id="photo4" value="承諾しません">
-              <label for="photo4">承諾しません</label>
+          <div class="form-group">
+            <label class="required">お写真のSNS使用について</label>
+            <p class="description">※個人情報は伏せて使用いたします</p>
+            <div class="radio-group">
+              <div class="radio-item">
+                <input type="radio" name="photoUsage" id="photo1" value="承諾します（お子様とママ）" required>
+                <label for="photo1">承諾します（お子様とママ）</label>
+              </div>
+              <div class="radio-item">
+                <input type="radio" name="photoUsage" id="photo2" value="承諾します（お子様のみ）">
+                <label for="photo2">承諾します（お子様のみ）</label>
+              </div>
+              <div class="radio-item">
+                <input type="radio" name="photoUsage" id="photo3" value="承諾します（お子様の横顔のみ）">
+                <label for="photo3">承諾します（お子様の横顔のみ）</label>
+              </div>
+              <div class="radio-item">
+                <input type="radio" name="photoUsage" id="photo4" value="承諾しません">
+                <label for="photo4">承諾しません</label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button type="submit" class="submit-btn" id="submitBtn">予約を送信する</button>
-      </form>
+          <button type="submit" class="submit-btn" id="submitBtn">予約を送信する</button>
+        </form>
+      </div>
     </div>
 
     <div class="success" id="success">
-      <h2>✓ 予約完了</h2>
-      <p>ご予約ありがとうございます！<br>確認メールをお送りしましたので、<br>ご確認ください。</p>
+      <div class="success-icon">✓</div>
+      <h2>ご予約ありがとうございます</h2>
+      <p>LINEで予約確認メッセージをお送りしました。<br><br>
+      撮影日が決まりましたらご連絡いたします。<br>
+      ご不明点はLINEでお気軽にお問い合わせください。</p>
+    </div>
+    
+    <div class="error" id="error">
+      <p>エラーが発生しました。<br>LINEアプリから開いてください。</p>
     </div>
   </div>
 
@@ -150,6 +556,11 @@
 
     let lineDisplayName = "";
     let lineUserId = "";
+
+    function selectPlan(card) {
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
 
     async function initLiff() {
       try {
@@ -185,10 +596,10 @@
 
       const consentItems = [];
       if (document.getElementById("consent1").checked) {
-        consentItems.push("お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合もございます。");
+        consentItems.push("お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合がございます。");
       }
       if (document.getElementById("consent2").checked) {
-        consentItems.push("サービスご提供中において、お荷物・貴重品の紛失・盗難は一切責任が持てません。ご了承くださいませ。");
+        consentItems.push("サービスご提供中の貴重品の紛失・盗難について責任を負いかねます。");
       }
 
       const formData = {
