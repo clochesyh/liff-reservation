@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>うまれたてNewBornPhoto 予約</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,7 +26,6 @@
       padding: 0;
     }
     
-    /* ヘッダー：画像の上にタイトルを重ねる */
     .header { 
       position: relative;
       width: 100%;
@@ -333,12 +333,90 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(140, 55, 45, 0.4);
     }
+    
+    .submit-btn:disabled { 
+      background: #ccc;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .loading { 
+      display: none;
+      text-align: center; 
+      padding: 60px 24px;
+    }
+    
+    .spinner { 
+      width: 50px; 
+      height: 50px; 
+      border: 3px solid #f0ebe8; 
+      border-top: 3px solid #8C372D; 
+      border-radius: 50%; 
+      animation: spin 1s linear infinite; 
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+    
+    .loading p {
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .success { 
+      display: none; 
+      text-align: center; 
+      padding: 60px 24px;
+      background: white;
+      border-radius: 20px;
+      margin: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+    
+    .success h2 { 
+      color: #2e7d32;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    
+    .success p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+    
+    .error { 
+      display: none;
+      text-align: center; 
+      padding: 40px 24px;
+      color: #d32f2f;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div id="formContainer">
-      <!-- ヘッダー：画像の上にタイトルを重ねる -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>読み込み中...</p>
+    </div>
+
+    <div id="formContainer" style="display:none;">
       <div class="header">
         <img src="https://cloche-photo.com/images/shinyokohama/form-header.jpg" alt="NewBorn Photo">
         <div class="header-overlay">
@@ -505,13 +583,102 @@
         </form>
       </div>
     </div>
+
+    <div class="success" id="success">
+      <div class="success-icon">✓</div>
+      <h2>ご予約ありがとうございます</h2>
+      <p>LINEで予約確認メッセージをお送りしました。<br><br>
+      撮影日が決まりましたらご連絡いたします。<br>
+      ご不明点はLINEでお気軽にお問い合わせください。</p>
+    </div>
+    
+    <div class="error" id="error">
+      <p>エラーが発生しました。<br>LINEアプリから開いてください。</p>
+    </div>
   </div>
 
   <script>
+    const LIFF_ID = "2008750303-KIIQZYQt";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz9BMAKo5RAXQ1sWp9fx3eKVh_SpdbzwHkQDOMMcBbu5YMXzWh_JO_Fa80-rBmJqKMvBQ/exec";
+
+    let lineDisplayName = "";
+    let lineUserId = "";
+
     function selectPlan(card) {
       document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
     }
+
+    async function initLiff() {
+      try {
+        document.getElementById("loading").style.display = "block";
+        
+        await liff.init({ liffId: LIFF_ID });
+        
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+        
+        const profile = await liff.getProfile();
+        lineDisplayName = profile.displayName;
+        lineUserId = profile.userId;
+        
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("formContainer").style.display = "block";
+        
+      } catch (error) {
+        console.error("LIFF init error:", error);
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("formContainer").style.display = "block";
+      }
+    }
+
+    document.getElementById("reservationForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "送信中...";
+
+      const consentItems = [];
+      if (document.getElementById("consent1").checked) {
+        consentItems.push("お子様のご機嫌により、撮影時間内にご希望の写真を撮影できない場合がございます。");
+      }
+      if (document.getElementById("consent2").checked) {
+        consentItems.push("サービスご提供中の貴重品の紛失・盗難について責任を負いかねます。");
+      }
+
+      const formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        dueDate: document.getElementById("dueDate").value,
+        plan: document.querySelector('input[name="plan"]:checked').value,
+        consent: consentItems.join(", "),
+        photoUsage: document.querySelector('input[name="photoUsage"]:checked').value,
+        lineDisplayName: lineDisplayName,
+        lineUserId: lineUserId
+      };
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify(formData)
+        });
+
+        document.getElementById("formContainer").style.display = "none";
+        document.getElementById("success").style.display = "block";
+
+      } catch (error) {
+        console.error("Submit error:", error);
+        alert("送信に失敗しました。もう一度お試しください。");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "予約を送信する";
+      }
+    });
+
+    initLiff();
   </script>
 </body>
 </html>
