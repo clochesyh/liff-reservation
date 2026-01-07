@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>出産日報告</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 400;
+      background: linear-gradient(135deg, #fdf6f3 0%, #f9f1ed 100%);
+      color: #4a4a4a;
+      min-height: 100vh;
+      line-height: 1.8;
+    }
+    
+    .container { 
+      max-width: 480px; 
+      margin: 0 auto; 
+      padding: 24px 20px 40px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .header-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #8C372D;
+      margin-bottom: 8px;
+    }
+    
+    .header-subtitle {
+      font-size: 13px;
+      color: #888;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e8e0dc;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: 'Noto Sans JP', sans-serif;
+      transition: all 0.3s ease;
+      background: #fdfcfb;
+    }
+    
+    .form-group input[type="date"]:focus {
+      outline: none;
+      border-color: #8C372D;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(140, 55, 45, 0.1);
+    }
+    
+    .info-box {
+      background: #fff8f6;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #8C372D;
+      line-height: 1.7;
+    }
+    
+    .info-box-icon {
+      margin-right: 6px;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #8C372D 0%, #a94438 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(140, 55, 45, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(140, 55, 45, 0.4);
+    }
+    
+    .submit-btn:disabled {
+      background: #ccc;
+      box-shadow: none;
+      transform: none;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f0ebe8;
+      border-top: 3px solid #8C372D;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading p {
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .success {
+      display: none;
+      text-align: center;
+      padding: 40px 24px;
+    }
+    
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .success h2 {
+      color: #8C372D;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .success p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    
+    .error {
+      display: none;
+      text-align: center;
+      padding: 40px 24px;
+      color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>読み込み中...</p>
+    </div>
+
+    <div id="formContainer" style="display:none;">
+      <div class="header">
+        <div class="header-icon">👶</div>
+        <div class="header-title">出産日のご報告</div>
+        <div class="header-subtitle">ご出産おめでとうございます</div>
+      </div>
+      
+      <div class="form-card">
+        <div class="info-box">
+          <span class="info-box-icon">📅</span>
+          ご報告いただいた出産日をもとに、撮影日を調整いたします。
+        </div>
+        
+        <form id="reportForm">
+          <div class="form-group">
+            <label>出産日を選択してください</label>
+            <input type="date" id="deliveryDate" required>
+          </div>
+          
+          <button type="submit" class="submit-btn" id="submitBtn">報告する</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="success" id="success">
+      <div class="success-icon">🎉</div>
+      <h2>ご報告ありがとうございます</h2>
+      <p>撮影日が決まりましたら<br>あらためてご連絡いたします。</p>
+    </div>
+    
+    <div class="error" id="error">
+      <p>エラーが発生しました。<br>もう一度お試しください。</p>
+    </div>
+  </div>
+
+  <script>
+    const LIFF_ID = "2008750303-5vqtnezB";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz9BMAKo5RAXQ1sWp9fx3eKVh_SpdbzwHkQDOMMcBbu5YMXzWh_JO_Fa80-rBmJqKMvBQ/exec";
+
+    let lineUserId = "";
+    let lineDisplayName = "";
+
+    async function initLiff() {
+      try {
+        document.getElementById("loading").style.display = "block";
+        
+        await liff.init({ liffId: LIFF_ID });
+        
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+        
+        const profile = await liff.getProfile();
+        lineUserId = profile.userId;
+        lineDisplayName = profile.displayName;
+        
+        // デフォルトで今日の日付を設定
+        const today = new Date();
+        document.getElementById("deliveryDate").valueAsDate = today;
+        
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("formContainer").style.display = "block";
+        
+      } catch (error) {
+        console.error("LIFF init error:", error);
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("error").style.display = "block";
+      }
+    }
+
+    document.getElementById("reportForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "送信中...";
+
+      const deliveryDate = document.getElementById("deliveryDate").value;
+
+      const formData = {
+        action: "deliveryReport",
+        lineUserId: lineUserId,
+        lineDisplayName: lineDisplayName,
+        deliveryDate: deliveryDate
+      };
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          document.getElementById("formContainer").style.display = "none";
+          document.getElementById("success").style.display = "block";
+          
+          // 3秒後にLIFFを閉じる
+          setTimeout(() => {
+            liff.closeWindow();
+          }, 3000);
+        } else {
+          throw new Error(result.error || "送信に失敗しました");
+        }
+
+      } catch (error) {
+        console.error("Submit error:", error);
+        alert("送信に失敗しました。もう一度お試しください。");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "報告する";
+      }
+    });
+
+    initLiff();
+  </script>
+</body>
+</html>
