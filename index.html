@@ -321,19 +321,175 @@
       color: #555;
     }
     
-    .plan-option {
-      background: #f9f6f4;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-top: 10px;
-      font-size: 11px;
-      color: #666;
+    /* オプション選択エリア（院内着Planの真下に表示） */
+    .option-section {
+      display: none;
+      margin-top: 12px;
+      animation: slideDown 0.4s ease-out;
     }
     
-    .plan-option-title {
-      font-weight: 500;
+    .option-section.show {
+      display: block;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 15px rgba(212, 165, 116, 0);
+      }
+    }
+    
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+    
+    .option-box {
+      background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
+      border: 3px solid #d4a574;
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      animation: pulse 2s ease-in-out 3;
+    }
+    
+    .option-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 2s ease-in-out 3;
+      pointer-events: none;
+    }
+    
+    .option-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    
+    .option-icon {
+      font-size: 24px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+    
+    .option-title {
+      font-size: 16px;
+      font-weight: 700;
       color: #8C372D;
-      margin-bottom: 4px;
+    }
+    
+    .option-required {
+      background: #e74c3c;
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+    
+    .option-description {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+    
+    .option-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .option-choice {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      background: white;
+      border: 2px solid #e8e0dc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .option-choice:hover {
+      border-color: #d4a574;
+      background: #fffcf8;
+    }
+    
+    .option-choice.selected {
+      border-color: #d4a574;
+      background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
+      box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+    }
+    
+    .option-choice input[type="radio"] {
+      margin-right: 12px;
+      transform: scale(1.3);
+      accent-color: #d4a574;
+    }
+    
+    .option-choice-content {
+      flex: 1;
+    }
+    
+    .option-choice-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .option-choice-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #d4a574;
+      margin-left: auto;
+    }
+    
+    .option-choice-free {
+      font-size: 14px;
+      font-weight: 500;
+      color: #888;
+      margin-left: auto;
     }
     
     .checkbox-group, .radio-group { 
@@ -512,45 +668,74 @@
             
             <div class="plan-cards">
               <!-- 院内着 Plan -->
-              <label class="plan-card" onclick="selectPlan(this)">
-                <input type="radio" name="plan" value="院内着Plan ¥7,150(税込)" required>
-                <img src="https://cloche-photo.com/images/shinyokohama/syh-plan-a-1.jpg" alt="院内着Plan" class="plan-card-image">
-                <div class="plan-card-body">
-                  <div class="plan-card-header">
-                    <span class="plan-name">院内着 Plan</span>
-                    <div class="plan-price-area">
-                      <div class="plan-price">¥7,150</div>
-                      <div class="plan-price-note">税込</div>
+              <div class="plan-wrapper">
+                <label class="plan-card" onclick="selectPlan('innai')">
+                  <input type="radio" name="plan" value="院内着Plan" required id="planInnai">
+                  <img src="https://cloche-photo.com/images/shinyokohama/syh-plan-a-1.jpg" alt="院内着Plan" class="plan-card-image">
+                  <div class="plan-card-body">
+                    <div class="plan-card-header">
+                      <span class="plan-name">院内着 Plan</span>
+                      <div class="plan-price-area">
+                        <div class="plan-price">¥7,150</div>
+                        <div class="plan-price-note">税込</div>
+                      </div>
+                    </div>
+                    <div class="plan-cuts">3 Cuts</div>
+                    <div class="plan-features">
+                      <div class="plan-feature">お部屋での撮影</div>
+                      <div class="plan-feature">レタッチ（写真補正）あり</div>
+                      <div class="plan-feature">ママとの撮影OK</div>
+                      <div class="plan-feature">パーツ撮影OK</div>
+                      <div class="plan-feature">当日お渡し：明るさ調整写真</div>
+                    </div>
+                    <div class="plan-info-table">
+                      <div class="plan-info-row">
+                        <span class="plan-info-label">撮影可能日</span>
+                        <span class="plan-info-value">ご出産の翌日から</span>
+                      </div>
+                      <div class="plan-info-row">
+                        <span class="plan-info-label">追加購入</span>
+                        <span class="plan-info-value">4枚目以降 ¥1,000/枚</span>
+                      </div>
                     </div>
                   </div>
-                  <div class="plan-cuts">3 Cuts</div>
-                  <div class="plan-features">
-                    <div class="plan-feature">お部屋での撮影</div>
-                    <div class="plan-feature">レタッチ（写真補正）あり</div>
-                    <div class="plan-feature">ママとの撮影OK</div>
-                    <div class="plan-feature">パーツ撮影OK</div>
-                    <div class="plan-feature">当日お渡し：明るさ調整写真</div>
-                  </div>
-                  <div class="plan-info-table">
-                    <div class="plan-info-row">
-                      <span class="plan-info-label">撮影可能日</span>
-                      <span class="plan-info-value">ご出産の翌日から</span>
+                </label>
+                
+                <!-- オプション選択（院内着Planの真下） -->
+                <div class="option-section" id="optionSection">
+                  <div class="option-box">
+                    <div class="option-header">
+                      <span class="option-icon">👗</span>
+                      <span class="option-title">ドレスオプション</span>
+                      <span class="option-required">必須</span>
                     </div>
-                    <div class="plan-info-row">
-                      <span class="plan-info-label">追加購入</span>
-                      <span class="plan-info-value">4枚目以降 ¥1,000/枚</span>
+                    <p class="option-description">
+                      可愛いドレスを着て撮影できます！<br>
+                      ご希望の場合は「追加する」を選択してください。
+                    </p>
+                    <div class="option-choices">
+                      <label class="option-choice" onclick="selectOption(this, 'yes')">
+                        <input type="radio" name="dressOption" value="ドレス追加あり" id="optionYes">
+                        <div class="option-choice-content">
+                          <div class="option-choice-label">ドレスを追加する</div>
+                        </div>
+                        <span class="option-choice-price">+¥3,000</span>
+                      </label>
+                      <label class="option-choice" onclick="selectOption(this, 'no')">
+                        <input type="radio" name="dressOption" value="ドレス追加なし" id="optionNo">
+                        <div class="option-choice-content">
+                          <div class="option-choice-label">ドレスは不要</div>
+                        </div>
+                        <span class="option-choice-free">−</span>
+                      </label>
                     </div>
-                  </div>
-                  <div class="plan-option">
-                    <div class="plan-option-title">オプション</div>
-                    ドレス追加 +¥3,000
                   </div>
                 </div>
-              </label>
+              </div>
               
               <!-- スワドル Plan -->
-              <label class="plan-card" onclick="selectPlan(this)">
-                <input type="radio" name="plan" value="スワドルPlan ¥25,300(税込)">
+              <label class="plan-card" onclick="selectPlan('swaddle')">
+                <input type="radio" name="plan" value="スワドルPlan ¥25,300(税込)" id="planSwaddle">
                 <span class="plan-badge">おすすめ</span>
                 <img src="https://cloche-photo.com/images/shinyokohama/syh-hero-1.jpg" alt="スワドルPlan" class="plan-card-image">
                 <div class="plan-card-body">
@@ -651,10 +836,48 @@
 
     let lineDisplayName = "";
     let lineUserId = "";
+    let selectedPlanType = "";
 
-    function selectPlan(card) {
+    function selectPlan(planType) {
+      selectedPlanType = planType;
+      
+      // プランカードの選択状態を更新
       document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
+      
+      if (planType === 'innai') {
+        document.querySelector('.plan-wrapper .plan-card').classList.add('selected');
+      } else {
+        document.querySelectorAll('.plan-card')[1].classList.add('selected');
+      }
+      
+      // オプションセクションの表示/非表示
+      const optionSection = document.getElementById('optionSection');
+      const optionYes = document.getElementById('optionYes');
+      const optionNo = document.getElementById('optionNo');
+      
+      if (planType === 'innai') {
+        // 院内着Planの場合：オプション表示、必須にする
+        optionSection.classList.add('show');
+        optionYes.required = true;
+        // スクロールしてオプションを見せる
+        setTimeout(() => {
+          optionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      } else {
+        // スワドルPlanの場合：オプション非表示、必須解除
+        optionSection.classList.remove('show');
+        optionYes.required = false;
+        optionNo.required = false;
+        // オプションの選択をリセット
+        optionYes.checked = false;
+        optionNo.checked = false;
+        document.querySelectorAll('.option-choice').forEach(c => c.classList.remove('selected'));
+      }
+    }
+    
+    function selectOption(element, option) {
+      document.querySelectorAll('.option-choice').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
     }
 
     async function initLiff() {
@@ -685,6 +908,16 @@
     document.getElementById("reservationForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       
+      // 院内着Planでオプション未選択の場合
+      if (selectedPlanType === 'innai') {
+        const optionSelected = document.querySelector('input[name="dressOption"]:checked');
+        if (!optionSelected) {
+          alert('ドレスオプションを選択してください。');
+          document.getElementById('optionSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+      
       const submitBtn = document.getElementById("submitBtn");
       submitBtn.disabled = true;
       submitBtn.textContent = "送信中...";
@@ -697,12 +930,25 @@
         consentItems.push("サービスご提供中の貴重品の紛失・盗難について責任を負いかねます。");
       }
 
+      // プラン名を組み立て
+      let planValue = "";
+      if (selectedPlanType === 'innai') {
+        const dressOption = document.querySelector('input[name="dressOption"]:checked').value;
+        if (dressOption === 'ドレス追加あり') {
+          planValue = "院内着Plan ¥7,150（ドレス追加 +¥3,000）";
+        } else {
+          planValue = "院内着Plan ¥7,150（ドレスなし）";
+        }
+      } else {
+        planValue = "スワドルPlan ¥25,300(税込)";
+      }
+
       const formData = {
         name: document.getElementById("name").value,
         email: document.getElementById("email").value,
         phone: document.getElementById("phone").value,
         dueDate: document.getElementById("dueDate").value,
-        plan: document.querySelector('input[name="plan"]:checked').value,
+        plan: planValue,
         consent: consentItems.join(", "),
         photoUsage: document.querySelector('input[name="photoUsage"]:checked').value,
         lineDisplayName: lineDisplayName,
