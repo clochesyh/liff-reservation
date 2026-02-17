@@ -719,7 +719,7 @@
                         <div class="option-choice-content">
                           <div class="option-choice-label">ドレスを追加する</div>
                         </div>
-                        <span class="option-choice-price">+¥3,000</span>
+                        <span class="option-choice-price">+¥5,000</span>
                       </label>
                       <label class="option-choice" onclick="selectOption(this, 'no')">
                         <input type="radio" name="dressOption" value="ドレス追加なし" id="optionNo">
@@ -935,7 +935,7 @@
       if (selectedPlanType === 'innai') {
         const dressOption = document.querySelector('input[name="dressOption"]:checked').value;
         if (dressOption === 'ドレス追加あり') {
-          planValue = "院内着Plan ¥7,150（ドレス追加 +¥3,000）";
+          planValue = "院内着Plan ¥7,150（ドレス追加 +¥5,000）";
         } else {
           planValue = "院内着Plan ¥7,150（ドレスなし）";
         }
