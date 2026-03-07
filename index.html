@@ -931,17 +931,17 @@
         consentItems.push("サービスご提供中の貴重品の紛失・盗難について責任を負いかねます。");
       }
 
-      // プラン名を組み立て
+      // プラン名とドレスオプションを分離
       let planValue = "";
+      let dressOptionValue = "なし";
       if (selectedPlanType === 'innai') {
+        planValue = "院内着Plan";
         const dressOption = document.querySelector('input[name="dressOption"]:checked').value;
         if (dressOption === 'ドレス追加あり') {
-          planValue = "院内着Plan ¥7,150（ドレス追加 +¥5,000）";
-        } else {
-          planValue = "院内着Plan ¥7,150（ドレスなし）";
+          dressOptionValue = "あり";
         }
       } else {
-        planValue = "スワドルPlan ¥25,300(税込)";
+        planValue = "スワドルPlan";
       }
 
       const formData = {
@@ -950,8 +950,9 @@
         phone: document.getElementById("phone").value,
         dueDate: document.getElementById("dueDate").value,
         plan: planValue,
+        dressOption: dressOptionValue,
         consent: consentItems.join(", "),
-        photoUsage: document.querySelector('input[name="photoUsage"]:checked').value,
+        snsUse: document.querySelector('input[name="photoUsage"]:checked').value,
         lineDisplayName: lineDisplayName,
         lineUserId: lineUserId
       };
