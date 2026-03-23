@@ -735,14 +735,14 @@
                 </div>
               </div>
               
-              <!-- スワドル Plan -->
-              <label class="plan-card" onclick="selectPlan('swaddle')">
-                <input type="radio" name="plan" value="スワドルPlan ¥25,300(税込)" id="planSwaddle">
+              <!-- プレミアム Plan -->
+              <label class="plan-card" onclick="selectPlan('premium')">
+                <input type="radio" name="plan" value="プレミアムPlan ¥25,300(税込)" id="planPremium">
                 <span class="plan-badge">おすすめ</span>
-                <img src="https://cloche-photo.com/images/shinyokohama/syh-hero-1.jpg" alt="スワドルPlan" class="plan-card-image">
+                <img src="https://cloche-photo.com/images/shinyokohama/syh-hero-1.jpg" alt="プレミアムPlan" class="plan-card-image">
                 <div class="plan-card-body">
                   <div class="plan-card-header">
-                    <span class="plan-name">スワドル Plan</span>
+                    <span class="plan-name">プレミアム Plan</span>
                     <div class="plan-price-area">
                       <div class="plan-price">¥25,300</div>
                       <div class="plan-price-note">税込</div>
@@ -866,7 +866,7 @@
           optionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 300);
       } else {
-        // スワドルPlanの場合：オプション非表示、必須解除
+        // プレミアムPlanの場合：オプション非表示、必須解除
         optionSection.classList.remove('show');
         optionYes.required = false;
         optionNo.required = false;
@@ -942,7 +942,7 @@
           dressOptionValue = "あり";
         }
       } else {
-        planValue = "スワドルPlan";
+        planValue = "プレミアムPlan";
       }
 
       const formData = {
